@@ -1,0 +1,285 @@
+"""
+AI-Driven Early Fatigue and Stress Detection System
+Using Voice Analytics and Ambient Sensing
+
+Real-time voice analysis for wellness monitoring
+"""
+
+import sys
+import time
+from datetime import datetime
+from voice_analyzer import VoiceAnalyzer
+from wellness_calculator import WellnessCalculator
+from recommendations import RecommendationEngine
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+class StressDetectionApp:
+    """
+    Main application for stress and fatigue detection
+    """
+    
+    def __init__(self):
+        self.voice_analyzer = VoiceAnalyzer()
+        self.wellness_calculator = WellnessCalculator()
+        self.recommendation_engine = RecommendationEngine()
+        
+        # Load previous history
+        self.wellness_calculator.load_history()
+        
+    def print_header(self):
+        """Print application header"""
+        print("\n" + "="*70)
+        print("🩺 AI-DRIVEN FATIGUE & STRESS DETECTION SYSTEM")
+        print("   Real-time Voice Analytics | Privacy-First | Offline")
+        print("="*70)
+        print(f"📅 Date: {datetime.now().strftime('%Y-%m-%d')}")
+        print(f"⏰ Time: {datetime.now().strftime('%H:%M:%S')}")
+        print("="*70 + "\n")
+    
+    def print_wellness_results(self, wellness_data):
+        """Display wellness analysis results"""
+        print("\n" + "="*70)
+        print("📊 WELLNESS ANALYSIS RESULTS")
+        print("="*70)
+        
+        # Wellness Index with visual indicator
+        indicator = wellness_data['indicator']
+        wellness_index = wellness_data['wellness_index']
+        category = wellness_data['category']
+        
+        print(f"\n{indicator} WELLNESS INDEX: {wellness_index}/100")
+        print(f"   Category: {category}")
+        
+        # Visual bar
+        bar_length = int(wellness_index / 2)
+        bar = "█" * bar_length + "░" * (50 - bar_length)
+        print(f"   [{bar}]")
+        
+        # Detailed scores
+        print(f"\n📈 Detailed Analysis:")
+        print(f"   • Stress Level:  {wellness_data['stress_score']}/100")
+        print(f"   • Fatigue Level: {wellness_data['fatigue_score']}/100")
+        print(f"   • Risk Type:     {wellness_data['risk_level']}")
+        
+        print("\n" + "-"*70)
+    
+    def print_recommendations(self, report):
+        """Display personalized recommendations"""
+        print("\n💡 PERSONALIZED RECOMMENDATIONS")
+        print("="*70)
+        
+        # Immediate action
+        action = report['immediate_action']
+        print(f"\n⚡ Immediate Action [{action['urgency']} Priority]:")
+        print(f"   {action['action']}")
+        
+        # Personalized recommendations
+        print(f"\n🎯 Action Items:")
+        for i, rec in enumerate(report['personalized_recommendations'], 1):
+            print(f"   {i}. {rec}")
+        
+        # Breathing exercise
+        print(f"\n🧘 Breathing Exercise: {report['breathing_exercise']['name']}")
+        for instruction in report['breathing_exercise']['instructions']:
+            print(f"   {instruction}")
+        
+        print("\n" + "-"*70)
+    
+    def print_trends(self):
+        """Display wellness trends"""
+        trends = self.wellness_calculator.get_trend_analysis()
+        
+        if isinstance(trends, str):
+            print(f"\n📊 Trend Analysis: {trends}")
+        else:
+            print(f"\n📊 Wellness Trends (Last 5 Sessions):")
+            print(f"   • Average Wellness: {trends['average_wellness']}/100")
+            print(f"   • Trend: {trends['trend']}")
+            print(f"   • Total Sessions: {trends['sessions_count']}")
+        
+        print("\n" + "="*70)
+    
+    def run_analysis(self):
+        """Run complete wellness analysis"""
+        try:
+            # Header
+            self.print_header()
+            
+            print("🎤 VOICE RECORDING")
+            print("-"*70)
+            print("📝 Instructions:")
+            print("   • Find a quiet place")
+            print("   • Speak naturally for 5 seconds")
+            print("   • Talk about how you're feeling, or read any text")
+            print("   • Examples: 'I'm feeling okay today' or count to 20")
+            print("-"*70 + "\n")
+            
+            input("Press ENTER when ready to start recording...")
+            print()
+            
+            # Record and analyze voice
+            print("🔄 Analyzing voice patterns...")
+            voice_results = self.voice_analyzer.analyze()
+            
+            stress_score = voice_results['stress_score']
+            fatigue_score = voice_results['fatigue_score']
+            
+            print("✅ Voice analysis complete!")
+            time.sleep(0.5)
+            
+            # Calculate wellness
+            print("🔄 Calculating wellness index...")
+            wellness_data = self.wellness_calculator.analyze_complete(
+                stress_score, 
+                fatigue_score
+            )
+            
+            print("✅ Wellness calculation complete!")
+            time.sleep(0.5)
+            
+            # Generate recommendations
+            print("🔄 Generating personalized recommendations...")
+            report = self.recommendation_engine.generate_report(wellness_data)
+            
+            print("✅ Analysis complete!")
+            time.sleep(0.5)
+            
+            # Display results
+            self.print_wellness_results(wellness_data)
+            self.print_recommendations(report)
+            self.print_trends()
+            
+            # Privacy notice
+            print("\n🔒 PRIVACY NOTICE:")
+            print("   All processing done locally on your device")
+            print("   No data sent to cloud or external servers")
+            print("   Data stored only in local wellness_history.json file")
+            
+            print("\n" + "="*70)
+            print("✅ Session completed successfully!")
+            print("="*70 + "\n")
+            
+            return True
+            
+        except KeyboardInterrupt:
+            print("\n\n⚠️ Analysis interrupted by user")
+            return False
+        except Exception as e:
+            print(f"\n❌ Error during analysis: {str(e)}")
+            print("Please check your microphone and try again")
+            return False
+    
+    def show_menu(self):
+        """Display main menu"""
+        print("\n" + "="*70)
+        print("MAIN MENU")
+        print("="*70)
+        print("1. 🎤 Start New Wellness Check")
+        print("2. 📊 View Wellness History")
+        print("3. ℹ️  About This System")
+        print("4. 🚪 Exit")
+        print("="*70)
+        
+        choice = input("\nEnter your choice (1-4): ").strip()
+        return choice
+    
+    def show_history(self):
+        """Display wellness history"""
+        if not self.wellness_calculator.history:
+            print("\n📊 No wellness history available yet")
+            print("   Complete your first wellness check to start tracking")
+            return
+        
+        print("\n" + "="*70)
+        print("📊 WELLNESS HISTORY")
+        print("="*70)
+        
+        for i, session in enumerate(self.wellness_calculator.history[-10:], 1):
+            print(f"\n{i}. {session['timestamp']}")
+            print(f"   Wellness Index: {session['wellness_index']}/100 - {session['category']}")
+            print(f"   Stress: {session['stress_score']}/100 | Fatigue: {session['fatigue_score']}/100")
+        
+        print("\n" + "="*70)
+    
+    def show_about(self):
+        """Display information about the system"""
+        print("\n" + "="*70)
+        print("ℹ️  ABOUT THIS SYSTEM")
+        print("="*70)
+        print("""
+This AI-driven system detects early signs of fatigue and stress through:
+
+🎤 VOICE ANALYSIS:
+   • Pitch and tone variations
+   • Energy and speaking rate
+   • Voice quality indicators
+   • Pause patterns
+
+📊 WELLNESS INDEX (0-100):
+   • 90-100: Excellent wellness
+   • 80-89:  Good wellness  
+   • 70-79:  Fair wellness (mild fatigue/stress)
+   • 60-69:  Moderate concern
+   • 50-59:  Significant concern
+   • 0-49:   Critical concern
+
+🔒 PRIVACY-FIRST DESIGN:
+   • All processing happens locally
+   • No cloud connection required
+   • Data stays on your device
+   • Optional anonymized logging only
+
+🎯 USE CASES:
+   • Workplace wellness monitoring
+   • Student stress detection
+   • Healthcare preliminary screening
+   • Personal wellness tracking
+
+⚡ TECHNOLOGY:
+   • Voice feature extraction (librosa)
+   • Signal processing (scipy)
+   • Machine learning indicators
+   • Real-time analysis
+        """)
+        print("="*70)
+    
+    def run(self):
+        """Main application loop"""
+        print("\n🩺 Welcome to AI-Driven Stress & Fatigue Detection System")
+        
+        while True:
+            choice = self.show_menu()
+            
+            if choice == '1':
+                self.run_analysis()
+                input("\nPress ENTER to continue...")
+            elif choice == '2':
+                self.show_history()
+                input("\nPress ENTER to continue...")
+            elif choice == '3':
+                self.show_about()
+                input("\nPress ENTER to continue...")
+            elif choice == '4':
+                print("\n👋 Thank you for using the system!")
+                print("Stay healthy and take care of yourself! 💪")
+                break
+            else:
+                print("\n❌ Invalid choice. Please enter 1-4")
+
+def main():
+    """Entry point"""
+    try:
+        app = StressDetectionApp()
+        app.run()
+    except KeyboardInterrupt:
+        print("\n\n👋 Goodbye!")
+    except Exception as e:
+        print(f"\n❌ Fatal error: {str(e)}")
+        print("Please check your setup and try again")
+
+if __name__ == "__main__":
+    main()
