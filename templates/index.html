@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Wellness Monitor</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f7ff;
+            color: #2d3748;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        .progress-bar {
+            height: 20px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .critical { background-color: #ef4444; }
+        .medium { background-color: #f59e0b; }
+        .good { background-color: #10b981; }
+        .excellent { background-color: #3b82f6; }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-800 mb-2">🤖 AI Wellness Monitor</h1>
+            <p class="text-gray-600">Your personal health assistant for stress and fatigue monitoring</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Webcam Feed -->
+            <div class="lg:col-span-2">
+                <div class="card p-6">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-800">Live Analysis</h2>
+                    <div class="relative bg-gray-100 rounded-lg overflow-hidden" style="padding-bottom: 56.25%;">
+                        <img id="video-feed" src="{{ url_for('video_feed') }}" class="absolute inset-0 w-full h-full object-cover" alt="Video Feed">
+                    </div>
+                    <div class="mt-4 text-sm text-gray-600">
+                        <p><i class="fas fa-info-circle mr-2"></i> Ensure your face is well-lit and clearly visible for accurate analysis.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wellness Dashboard -->
+            <div class="space-y-6">
+                <!-- Wellness Index -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-800">Wellness Index</h2>
+                    <div class="text-center mb-4">
+                        <div class="relative inline-block">
+                            <svg class="w-48 h-48" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+                                <circle id="wellness-circle" cx="60" cy="60" r="54" fill="none" 
+                                    stroke="#3b82f6" stroke-width="12" stroke-linecap="round" 
+                                    transform="rotate(-90 60 60)" stroke-dasharray="339.292" stroke-dashoffset="0"/>
+                                <text id="wellness-score" x="60" y="65" font-size="28" font-weight="bold" 
+                                    text-anchor="middle" fill="#1e40af">0</text>
+                                <text x="60" y="85" font-size="12" text-anchor="middle" fill="#6b7280">/ 100</text>
+                            </svg>
+                        </div>
+                        <div id="risk-level" class="text-xl font-semibold mt-2">-</div>
+                        <div id="recommendation" class="text-sm text-gray-600 mt-2 px-4">-</div>
+                    </div>
+                </div>
+
+                <!-- Metrics -->
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-800">Health Metrics</h2>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium">Stress Level</span>
+                            <span id="stress-score" class="font-semibold">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="stress-bar" class="progress-fill w-0"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium">Fatigue Level</span>
+                            <span id="fatigue-score" class="font-semibold">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="fatigue-bar" class="progress-fill w-0"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="font-medium">Blink Rate</span>
+                            <span id="blink-rate" class="font-semibold">0/min</span>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+                            <i class="fas fa-info-circle mr-1"></i> Normal range: 15-20 blinks/minute
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tips -->
+                <div class="card p-6 bg-blue-50 border border-blue-100">
+                    <h3 class="font-semibold text-blue-800 mb-2"><i class="fas fa-lightbulb mr-2"></i>Quick Wellness Tips</h3>
+                    <ul class="text-sm space-y-2 text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2">•</span>
+                            <span>Take a 20-second break every 20 minutes to look at something 20 feet away</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2">•</span>
+                            <span>Stay hydrated - drink at least 8 glasses of water daily</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-500 mr-2">•</span>
+                            <span>Practice deep breathing exercises when feeling stressed</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center text-sm text-gray-500">
+            <p>© 2023 AI Wellness Monitor | For demonstration purposes only</p>
+        </footer>
+    </div>
+
+    <script>
+        // Update wellness data every 2 seconds
+        function updateWellnessData() {
+            fetch('/get_wellness_data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update wellness index
+                    const wellnessScore = data.wellness_index;
+                    document.getElementById('wellness-score').textContent = wellnessScore;
+                    
+                    // Update circle progress
+                    const circle = document.getElementById('wellness-circle');
+                    const circumference = 2 * Math.PI * 54;
+                    const offset = circumference - (wellnessScore / 100) * circumference;
+                    circle.style.strokeDashoffset = offset;
+                    
+                    // Update risk level and recommendation
+                    document.getElementById('risk-level').textContent = data.risk_level;
+                    document.getElementById('recommendation').textContent = data.recommendation;
+                    
+                    // Update risk level styling
+                    const riskLevel = document.getElementById('risk-level');
+                    if (wellnessScore <= 40) {
+                        circle.style.stroke = '#ef4444';
+                        riskLevel.className = 'text-xl font-semibold mt-2 text-red-600';
+                        document.getElementById('recommendation').className = 'text-sm text-red-600 mt-2 px-4 font-medium';
+                    } else if (wellnessScore <= 65) {
+                        circle.style.stroke = '#f59e0b';
+                        riskLevel.className = 'text-xl font-semibold mt-2 text-yellow-600';
+                        document.getElementById('recommendation').className = 'text-sm text-yellow-600 mt-2 px-4 font-medium';
+                    } else if (wellnessScore <= 85) {
+                        circle.style.stroke = '#10b981';
+                        riskLevel.className = 'text-xl font-semibold mt-2 text-green-600';
+                        document.getElementById('recommendation').className = 'text-sm text-green-600 mt-2 px-4 font-medium';
+                    } else {
+                        circle.style.stroke = '#3b82f6';
+                        riskLevel.className = 'text-xl font-semibold mt-2 text-blue-600';
+                        document.getElementById('recommendation').className = 'text-sm text-blue-600 mt-2 px-4 font-medium';
+                    }
+                    
+                    // Update stress and fatigue levels
+                    document.getElementById('stress-score').textContent = data.stress_score + '%';
+                    document.getElementById('fatigue-score').textContent = data.fatigue_score + '%';
+                    document.getElementById('blink-rate').textContent = data.blink_rate.toFixed(1) + '/min';
+                    
+                    // Update progress bars
+                    document.getElementById('stress-bar').style.width = data.stress_score + '%';
+                    document.getElementById('fatigue-bar').style.width = data.fatigue_score + '%';
+                    
+                    // Update progress bar colors
+                    const stressBar = document.getElementById('stress-bar');
+                    const fatigueBar = document.getElementById('fatigue-bar');
+                    
+                    stressBar.className = 'progress-fill ' + getBarClass(data.stress_score);
+                    fatigueBar.className = 'progress-fill ' + getBarClass(data.fatigue_score);
+                    
+                    // Show alert for critical condition
+                    if (wellnessScore <= 40) {
+                        showAlert(data.recommendation);
+                    }
+                });
+        }
+        
+        function getBarClass(score) {
+            if (score > 70) return 'critical';
+            if (score > 40) return 'medium';
+            return 'good';
+        }
+        
+        function showAlert(message) {
+            // Check if notification permission is needed/granted
+            if (Notification.permission === "granted") {
+                new Notification("Wellness Alert", {
+                    body: message,
+                    icon: "/static/images/alert-icon.png"
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Wellness Alert", {
+                            body: message,
+                            icon: "/static/images/alert-icon.png"
+                        });
+                    }
+                });
+            }
+            
+            // Also show on-page alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg max-w-md z-50';
+            alertDiv.innerHTML = `
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-red-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">${message}</p>
+                    </div>
+                    <div class="ml-4">
+                        <button onclick="this.parentElement.parentElement.remove()" class="text-red-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.style.transition = 'opacity 1s';
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => alertDiv.remove(), 1000);
+                }
+            }, 10000);
+        }
+        
+        // Request notification permission when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+            
+            // Update data every 2 seconds
+            setInterval(updateWellnessData, 2000);
+            updateWellnessData();
+        });
+    </script>
+</body>
+</html>
