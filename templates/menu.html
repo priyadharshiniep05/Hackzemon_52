@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Wellness Monitor{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4">Welcome, {{ current_user.username }}!</h1>
+    <p class="lead">Monitor your wellness and manage your stress levels effectively.</p>
+</div>
+
+<div class="row g-4">
+    <!-- Live Analysis Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-primary">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-video fa-3x text-primary"></i>
+                </div>
+                <h3 class="h5 card-title">Live Analysis</h3>
+                <p class="card-text">Get real-time stress and fatigue analysis using your webcam.</p>
+                <a href="{{ url_for('live_analysis') }}" class="btn btn-outline-primary">
+                    Start Analysis <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Voice Analysis Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-success">
+            <div class="card-body text-center">
+                <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-microphone fa-3x text-success"></i>
+                </div>
+                <h3 class="h5 card-title">Voice Analysis</h3>
+                <p class="card-text">Analyze your stress levels through voice patterns and speech analysis.</p>
+                <a href="{{ url_for('voice_analysis') }}" class="btn btn-outline-success">
+                    Analyze Voice <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wellness Assistant Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-info">
+            <div class="card-body text-center">
+                <div class="bg-info bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-robot fa-3x text-info"></i>
+                </div>
+                <h3 class="h5 card-title">Wellness Assistant</h3>
+                <p class="card-text">Chat with our AI wellness assistant for personalized recommendations.</p>
+                <a href="{{ url_for('wellness_assistant') }}" class="btn btn-outline-info">
+                    Start Chat <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stress Relief Games Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-warning">
+            <div class="card-body text-center">
+                <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-gamepad fa-3x text-warning"></i>
+                </div>
+                <h3 class="h5 card-title">Stress Relief Games</h3>
+                <p class="card-text">Play relaxing games to reduce stress and improve focus.</p>
+                <a href="{{ url_for('games') }}" class="btn btn-outline-warning">
+                    Play Now <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wellness Graph Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-danger">
+            <div class="card-body text-center">
+                <div class="bg-danger bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-chart-line fa-3x text-danger"></i>
+                </div>
+                <h3 class="h5 card-title">Wellness Graph</h3>
+                <p class="card-text">Track your wellness progress over time with interactive charts.</p>
+                <a href="{{ url_for('wellness_graph') }}" class="btn btn-outline-danger">
+                    View Graph <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-secondary">
+            <div class="card-body text-center">
+                <div class="bg-secondary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-user fa-3x text-secondary"></i>
+                </div>
+                <h3 class="h5 card-title">Your Profile</h3>
+                <p class="card-text">View and update your profile information and settings.</p>
+                <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+                    View Profile <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Tips Section -->
+<div class="card mt-5">
+    <div class="card-header bg-light">
+        <h3 class="h5 mb-0">Quick Wellness Tips</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="d-flex">
+                    <div class="flex-shrink-0 text-primary me-3">
+                        <i class="fas fa-walking fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="h6">Take Short Walks</h5>
+                        <p class="small mb-0">A 5-minute walk every hour can significantly reduce stress and improve circulation.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex">
+                    <div class="flex-shrink-0 text-success me-3">
+                        <i class="fas fa-tint fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="h6">Stay Hydrated</h5>
+                        <p class="small mb-0">Drink at least 8 glasses of water daily to maintain optimal brain function.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="d-flex">
+                    <div class="flex-shrink-0 text-info me-3">
+                        <i class="fas fa-moon fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="h6">Quality Sleep</h5>
+                        <p class="small mb-0">Aim for 7-9 hours of sleep each night for better stress management.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

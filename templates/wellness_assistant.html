@@ -1,0 +1,575 @@
+{% extends "base.html" %}
+
+{% block title %}Wellness Assistant - Wellness Monitor{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        height: 70vh;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        margin-bottom: 20px;
+    }
+    
+    .message {
+        margin-bottom: 15px;
+        max-width: 80%;
+        clear: both;
+    }
+    
+    .user-message {
+        float: right;
+        background-color: #007bff;
+        color: white;
+        border-radius: 15px 15px 0 15px;
+        padding: 10px 15px;
+        margin-left: 20%;
+    }
+    
+    .assistant-message {
+        float: left;
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 15px 15px 15px 0;
+        padding: 10px 15px;
+        margin-right: 20%;
+    }
+    
+    .message-time {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 5px;
+        clear: both;
+    }
+    
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .typing-indicator.visible {
+        opacity: 1;
+    }
+    
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #6c757d;
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typingAnimation {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-5px); }
+    }
+    
+    .suggestion-chip {
+        display: inline-block;
+        background-color: #e9ecef;
+        border-radius: 20px;
+        padding: 5px 15px;
+        margin: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .suggestion-chip:hover {
+        background-color: #dee2e6;
+        transform: translateY(-2px);
+    }
+    
+    .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .quick-action-btn {
+        flex: 1 0 calc(50% - 10px);
+        min-width: 120px;
+    }
+    
+    .assistant-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #6c757d;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 10px;
+    }
+    
+    .message-wrapper {
+        display: flex;
+        margin-bottom: 15px;
+        max-width: 80%;
+    }
+    
+    .message-wrapper.user {
+        margin-left: auto;
+        flex-direction: row-reverse;
+    }
+    
+    .message-content {
+        max-width: calc(100% - 50px);
+    }
+    
+    .suggestions-container {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5">Wellness Assistant</h1>
+            <p class="lead">Your AI companion for mental health and wellness support</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-robot me-2"></i>Assistant Info</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="assistant-avatar mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;">
+                            WA
+                        </div>
+                        <h5>Wellness Assistant</h5>
+                        <p class="text-muted">Your AI companion for mental health and wellness</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6><i class="fas fa-info-circle me-2"></i>About</h6>
+                        <p class="small">I'm here to help you manage stress, improve your mood, and support your mental well-being. I can provide resources, exercises, and a listening ear whenever you need it.</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+                        <div class="quick-actions">
+                            <button class="btn btn-outline-primary btn-sm quick-action-btn" data-prompt="How can I reduce stress right now?">
+                                <i class="fas fa-wind me-1"></i> Reduce Stress
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm quick-action-btn" data-prompt="Suggest a quick mindfulness exercise">
+                                <i class="fas fa-spa me-1"></i> Mindfulness
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm quick-action-btn" data-prompt="I'm feeling anxious. What can I do?">
+                                <i class="fas fa-heartbeat me-1"></i> Anxiety Help
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm quick-action-btn" data-prompt="How can I improve my sleep?">
+                                <i class="fas fa-moon me-1"></i> Sleep Better
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6><i class="fas fa-chart-line me-2"></i>Your Wellness Stats</h6>
+                        <div class="progress mb-2" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                        </div>
+                        <p class="small text-muted">Based on your recent assessments and activities.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info p-2 small">
+                        <i class="fas fa-info-circle me-1"></i> Try the 4-7-8 breathing technique to reduce stress.
+                    </div>
+                    <div class="alert alert-success p-2 small">
+                        <i class="fas fa-check-circle me-1"></i> You've been consistent with your mood tracking this week!
+                    </div>
+                    <div class="alert alert-warning p-2 small">
+                        <i class="fas fa-exclamation-triangle me-1"></i> Your stress levels were elevated yesterday. Try a relaxation exercise.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-comments me-2"></i>Chat with Wellness Assistant</h5>
+                    <div>
+                        <button id="clearChat" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-trash-alt me-1"></i> Clear Chat
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="chatContainer" class="chat-container">
+                        <!-- Messages will be added here by JavaScript -->
+                        <div class="message-wrapper">
+                            <div class="assistant-avatar">WA</div>
+                            <div class="message-content">
+                                <div class="message assistant-message">
+                                    Hello! I'm your Wellness Assistant. How can I help you today?
+                                </div>
+                                <div class="suggestions-container">
+                                    <div class="suggestion-chip" data-prompt="I'm feeling stressed">I'm feeling stressed</div>
+                                    <div class="suggestion-chip" data-prompt="Help me relax">Help me relax</div>
+                                    <div class="suggestion-chip" data-prompt="I need motivation">I need motivation</div>
+                                </div>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 border-top">
+                        <form id="messageForm" class="d-flex">
+                            <input type="text" id="userInput" class="form-control me-2" 
+                                   placeholder="Type your message here..." autocomplete="off">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                        <div class="d-flex flex-wrap mt-2">
+                            <small class="text-muted me-2">Quick suggestions:</small>
+                            <div>
+                                <span class="badge bg-light text-dark border me-1 mb-1 suggestion-badge" style="cursor: pointer;">How to sleep better</span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 suggestion-badge" style="cursor: pointer;">Quick stress relief</span>
+                                <span class="badge bg-light text-dark border me-1 mb-1 suggestion-badge" style="cursor: pointer;">Mindfulness tips</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-bookmark me-2"></i>Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-head-side-virus text-primary me-2"></i>Mindfulness Exercises</h6>
+                                    <p class="small">Guided meditations and breathing exercises to help you stay present.</p>
+                                    <button class="btn btn-sm btn-outline-primary">Explore</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-moon text-info me-2"></i>Sleep Resources</h6>
+                                    <p class="small">Tips and techniques to improve your sleep quality.</p>
+                                    <button class="btn btn-sm btn-outline-info">View Tips</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-heartbeat text-danger me-2"></i>Stress Management</h6>
+                                    <p class="small">Learn effective strategies to manage daily stress.</p>
+                                    <button class="btn btn-sm btn-outline-danger">Learn More</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-dumbbell text-success me-2"></i>Physical Wellness</h6>
+                                    <p class="small">Exercises and activities for physical well-being.</p>
+                                    <button class="btn btn-sm btn-outline-success">Get Active</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Sample responses for the wellness assistant
+const assistantResponses = {
+    'greeting': [
+        "Hello! How can I assist you with your wellness today?",
+        "Hi there! I'm here to support your mental well-being. What's on your mind?",
+        "Welcome back! How can I help you feel your best today?"
+    ],
+    'stress': [
+        "I'm sorry to hear you're feeling stressed. Let's try a quick breathing exercise. Breathe in for 4 seconds, hold for 7, and exhale for 8. Repeat 5 times.",
+        "Stress can be challenging. Would you like to try a guided meditation or talk about what's on your mind?",
+        "When I feel stressed, I find it helpful to take a short walk or practice deep breathing. Would you like to try one of these?"
+    ],
+    'anxiety': [
+        "Anxiety can feel overwhelming. Try the 5-4-3-2-1 technique: Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste.",
+        "I'm here to listen. Can you tell me more about what's making you feel anxious?",
+        "Anxiety is tough, but remember that this feeling will pass. Would you like to try a grounding exercise?"
+    ],
+    'sleep': [
+        "For better sleep, try establishing a relaxing bedtime routine. Avoid screens an hour before bed and keep your room cool and dark.",
+        "Having trouble sleeping? A warm drink (caffeine-free) and some light reading might help. Would you like some sleep meditation recommendations?",
+        "Quality sleep is crucial for wellness. Try to go to bed and wake up at the same time every day, even on weekends."
+    ],
+    'motivation': [
+        "Motivation can be fleeting, but discipline can be built. Start with a small, manageable task to build momentum.",
+        "Remember why you started. Even small progress is still progress. What's one small step you can take right now?",
+        "Break your goal into smaller, more manageable tasks. Celebrate each small victory along the way!"
+    ],
+    'default': [
+        "I'm here to help with your wellness journey. Could you tell me more about what's on your mind?",
+        "I'm listening. How can I support you right now?",
+        "I'm here to help. What would you like to talk about?"
+    ]
+};
+
+// Get DOM elements
+const chatContainer = document.getElementById('chatContainer');
+const messageForm = document.getElementById('messageForm');
+const userInput = document.getElementById('userInput');
+const clearChatBtn = document.getElementById('clearChat');
+const suggestionBadges = document.querySelectorAll('.suggestion-badge');
+const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+
+// Add message to chat
+function addMessage(sender, message, isUser = false) {
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = `message-wrapper ${isUser ? 'user' : ''}`;
+    
+    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    messageWrapper.innerHTML = `
+        ${isUser ? '' : '<div class="assistant-avatar">WA</div>'}
+        <div class="message-content">
+            <div class="message ${isUser ? 'user-message' : 'assistant-message'}">
+                ${message}
+            </div>
+            <div class="message-time">${timeString}</div>
+        </div>
+        ${isUser ? '<div class="user-avatar">' + (currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U') + '</div>' : ''}
+    `;
+    
+    chatContainer.appendChild(messageWrapper);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// Show typing indicator
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `
+        <div class="assistant-avatar">WA</div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+    `;
+    
+    chatContainer.appendChild(typingDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // Make it visible after a small delay for smoothness
+    setTimeout(() => {
+        typingDiv.classList.add('visible');
+    }, 100);
+}
+
+// Hide typing indicator
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) {
+        typingIndicator.classList.remove('visible');
+        setTimeout(() => {
+            typingIndicator.remove();
+        }, 300);
+    }
+}
+
+// Get response from assistant
+function getAssistantResponse(userMessage) {
+    userMessage = userMessage.toLowerCase();
+    
+    // Simple keyword matching for demo purposes
+    // In a real app, you'd use NLP or an AI service
+    if (userMessage.includes('stress') || userMessage.includes('stressed')) {
+        return assistantResponses.stress[Math.floor(Math.random() * assistantResponses.stress.length)];
+    } else if (userMessage.includes('anxio') || userMessage.includes('nervous') || userMessage.includes('worried')) {
+        return assistantResponses.anxiety[Math.floor(Math.random() * assistantResponses.anxiety.length)];
+    } else if (userMessage.includes('sleep') || userMessage.includes('tired') || userMessage.includes('exhausted')) {
+        return assistantResponses.sleep[Math.floor(Math.random() * assistantResponses.sleep.length)];
+    } else if (userMessage.includes('motivat') || userMessage.includes('unmotivated') || userMessage.includes('lazy')) {
+        return assistantResponses.motivation[Math.floor(Math.random() * assistantResponses.motivation.length)];
+    } else if (userMessage.includes('hello') || userMessage.includes('hi') || userMessage.includes('hey')) {
+        return assistantResponses.greeting[Math.floor(Math.random() * assistantResponses.greeting.length)];
+    } else {
+        return assistantResponses.default[Math.floor(Math.random() * assistantResponses.default.length)];
+    }
+}
+
+// Handle form submission
+messageForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const message = userInput.value.trim();
+    
+    if (message) {
+        // Add user message
+        addMessage('user', message, true);
+        userInput.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Simulate thinking time
+        setTimeout(() => {
+            hideTypingIndicator();
+            
+            // Get and add assistant's response
+            const response = getAssistantResponse(message);
+            addMessage('assistant', response);
+            
+            // Add suggestions for follow-up
+            if (Math.random() > 0.5) { // 50% chance to show suggestions
+                const suggestions = [
+                    {text: 'Tell me more', prompt: 'Can you tell me more about that?'},
+                    {text: 'I need help relaxing', prompt: 'I need help relaxing'},
+                    {text: 'Thanks', prompt: 'Thank you'}
+                ];
+                
+                const suggestionsContainer = document.createElement('div');
+                suggestionsContainer.className = 'suggestions-container';
+                
+                suggestions.forEach(suggestion => {
+                    const chip = document.createElement('div');
+                    chip.className = 'suggestion-chip';
+                    chip.textContent = suggestion.text;
+                    chip.dataset.prompt = suggestion.prompt;
+                    suggestionsContainer.appendChild(chip);
+                });
+                
+                const lastMessage = chatContainer.lastElementChild;
+                if (lastMessage) {
+                    lastMessage.querySelector('.message-content').appendChild(suggestionsContainer);
+                    
+                    // Add click event to suggestion chips
+                    lastMessage.querySelectorAll('.suggestion-chip').forEach(chip => {
+                        chip.addEventListener('click', function() {
+                            userInput.value = this.dataset.prompt;
+                            messageForm.dispatchEvent(new Event('submit'));
+                        });
+                    });
+                }
+            }
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+    }
+});
+
+// Clear chat
+clearChatBtn.addEventListener('click', function() {
+    chatContainer.innerHTML = `
+        <div class="message-wrapper">
+            <div class="assistant-avatar">WA</div>
+            <div class="message-content">
+                <div class="message assistant-message">
+                    Hello! I'm your Wellness Assistant. How can I help you today?
+                </div>
+                <div class="suggestions-container">
+                    <div class="suggestion-chip" data-prompt="I'm feeling stressed">I'm feeling stressed</div>
+                    <div class="suggestion-chip" data-prompt="Help me relax">Help me relax</div>
+                    <div class="suggestion-chip" data-prompt="I need motivation">I need motivation</div>
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+    `;
+    
+    // Re-add event listeners to suggestion chips
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            userInput.value = this.dataset.prompt;
+            messageForm.dispatchEvent(new Event('submit'));
+        });
+    });
+});
+
+// Add click event to suggestion badges
+suggestionBadges.forEach(badge => {
+    badge.addEventListener('click', function() {
+        userInput.value = this.textContent;
+        messageForm.dispatchEvent(new Event('submit'));
+    });
+});
+
+// Add click event to quick action buttons
+quickActionBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        userInput.value = this.dataset.prompt;
+        messageForm.dispatchEvent(new Event('submit'));
+    });
+});
+
+// Add click event to suggestion chips in the initial message
+document.querySelectorAll('.suggestion-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+        userInput.value = this.dataset.prompt;
+        messageForm.dispatchEvent(new Event('submit'));
+    });
+});
+
+// Simulate user data (in a real app, this would come from your backend)
+const currentUser = {
+    name: '{{ current_user.username if current_user.is_authenticated else "User" }}',
+    wellnessScore: 75,
+    lastCheckIn: '2023-06-15'
+};
+</script>
+{% endblock %}

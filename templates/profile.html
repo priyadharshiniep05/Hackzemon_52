@@ -1,0 +1,1245 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Wellness Monitor{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        margin: 0 auto 15px;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: #4e73df;
+        font-weight: bold;
+    }
+    
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .profile-title {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 15px;
+    }
+    
+    .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: block;
+        line-height: 1.2;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+    
+    .profile-actions {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        height: 100%;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        font-weight: 600;
+        padding: 15px 20px;
+    }
+    
+    .activity-item {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background-color: #e9f0ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: #4e73df;
+        font-size: 1.1rem;
+    }
+    
+    .activity-details {
+        flex: 1;
+    }
+    
+    .activity-title {
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+    
+    .activity-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .badge-pill {
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
+    
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+    }
+    
+    .progress-bar {
+        border-radius: 4px;
+    }
+    
+    .wellness-score {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4e73df;
+        line-height: 1;
+        margin: 10px 0 5px;
+    }
+    
+    .wellness-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+    
+    .metric-item {
+        margin-bottom: 15px;
+    }
+    
+    .metric-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+    
+    .metric-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .metric-value {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .edit-icon {
+        color: #6c757d;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    
+    .edit-icon:hover {
+        color: #4e73df;
+    }
+    
+    .contact-info {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .contact-info li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .contact-info li:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .contact-info i {
+        width: 30px;
+        text-align: center;
+        margin-right: 10px;
+        color: #4e73df;
+    }
+    
+    .skill-tag {
+        display: inline-block;
+        background-color: #e9f0ff;
+        color: #4e73df;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin: 0 5px 8px 0;
+    }
+    
+    .language-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .language-name {
+        font-weight: 500;
+    }
+    
+    .language-level {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .social-links {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .social-link {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    
+    .social-link:hover {
+        background-color: #4e73df;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .tab-content {
+        padding: 20px 0;
+    }
+    
+    .nav-tabs .nav-link {
+        border: none;
+        color: #6c757d;
+        font-weight: 500;
+        padding: 10px 20px;
+        border-bottom: 2px solid transparent;
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        background: none;
+        border-color: #4e73df;
+    }
+    
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #4e73df;
+    }
+    
+    .goal-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .goal-item:last-child {
+        border-bottom: none;
+    }
+    
+    .goal-checkbox {
+        margin-right: 15px;
+    }
+    
+    .goal-text {
+        flex: 1;
+    }
+    
+    .goal-text.completed {
+        text-decoration: line-through;
+        color: #6c757d;
+    }
+    
+    .goal-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .document-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .document-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #e9f0ff;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: #4e73df;
+    }
+    
+    .document-details {
+        flex: 1;
+    }
+    
+    .document-name {
+        font-weight: 500;
+        margin-bottom: 3px;
+    }
+    
+    .document-meta {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .document-actions {
+        margin-left: 10px;
+    }
+    
+    .settings-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .settings-option:last-child {
+        border-bottom: none;
+    }
+    
+    .settings-label {
+        font-weight: 500;
+    }
+    
+    .settings-description {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 3px;
+    }
+    
+    .form-switch .form-check-input {
+        width: 2.5em;
+        margin-left: -2.5em;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+        background-position: left center;
+        border-radius: 2em;
+    }
+    
+    .form-switch .form-check-input:checked {
+        background-position: right center;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Header -->
+<div class="profile-header text-center position-relative">
+    <div class="profile-actions">
+        <button class="btn btn-light btn-sm">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </div>
+    
+    <div class="profile-avatar">
+        {% if current_user.avatar %}
+            <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}" alt="{{ current_user.username }}">
+        {% else %}
+            {{ current_user.username[0]|upper }}
+        {% endif %}
+    </div>
+    
+    <h1 class="profile-name">{{ current_user.username }}</h1>
+    <div class="profile-title">Wellness Enthusiast</div>
+    
+    <div class="profile-stats">
+        <div class="stat-item">
+            <span class="stat-value">42</span>
+            <span class="stat-label">Wellness Score</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">87%</span>
+            <span class="stat-label">Completion</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">28</span>
+            <span class="stat-label">Days Streak</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-4">
+            <!-- About Card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>About Me</span>
+                    <i class="fas fa-pencil-alt edit-icon" data-bs-toggle="modal" data-bs-target="#editAboutModal"></i>
+                </div>
+                <div class="card-body">
+                    <p>Passionate about health and wellness, I'm on a journey to improve my physical and mental well-being through mindful practices and healthy habits.</p>
+                    
+                    <h6 class="mt-4 mb-3">Contact Information</h6>
+                    <ul class="contact-info">
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>{{ current_user.email }}</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>San Francisco, CA</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-birthday-cake"></i>
+                            <span>Joined {{ current_user.date_created.strftime('%B %Y') }}</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skills & Interests -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Health Interests</span>
+                    <i class="fas fa-plus-circle edit-icon" data-bs-toggle="modal" data-bs-target="#addInterestModal"></i>
+                </div>
+                <div class="card-body">
+                    <span class="badge bg-primary-light text-primary mb-2">Mindfulness</span>
+                    <span class="badge bg-primary-light text-primary mb-2">Yoga</span>
+                    <span class="badge bg-primary-light text-primary mb-2">Meditation</span>
+                    <span class="badge bg-primary-light text-primary mb-2">Nutrition</span>
+                    <span class="badge bg-primary-light text-primary mb-2">Fitness</span>
+                    <span class="badge bg-primary-light text-primary mb-2">Sleep Hygiene</span>
+                    <span class="badge bg-primary-light text-primary mb-2">Stress Management</span>
+                </div>
+            </div>
+            
+            <!-- Wellness Stats -->
+            <div class="card">
+                <div class="card-header">
+                    Wellness Statistics
+                </div>
+                <div class="card-body text-center">
+                    <div class="wellness-score">87</div>
+                    <div class="wellness-label">Overall Wellness Score</div>
+                    <div class="progress mb-4">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 87%" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <span class="metric-name">Stress Level</span>
+                            <span class="metric-value text-danger">Medium</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <span class="metric-name">Sleep Quality</span>
+                            <span class="metric-value text-success">Good</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <span class="metric-name">Physical Activity</span>
+                            <span class="metric-value text-warning">Moderate</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 55%" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-item">
+                        <div class="metric-header">
+                            <span class="metric-name">Nutrition</span>
+                            <span class="metric-value text-info">Good</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="col-lg-8">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="true">
+                        <i class="fas fa-chart-line me-1"></i> Activity
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals" type="button" role="tab" aria-controls="goals" aria-selected="false">
+                        <i class="fas fa-bullseye me-1"></i> Goals
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" aria-controls="documents" aria-selected="false">
+                        <i class="far fa-file-alt me-1"></i> Documents
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+                        <i class="fas fa-cog me-1"></i> Settings
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tabs Content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Activity Tab -->
+                <div class="tab-pane fade show active" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                    <h5 class="mb-4">Recent Activity</h5>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Completed Daily Wellness Check-in</div>
+                            <div class="activity-time">Today, 8:30 AM</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-success bg-opacity-10 text-success">Completed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background-color: #e3f5ff; color: #0dcaf0;">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Recorded Sleep: 7h 24m</div>
+                            <div class="activity-time">Yesterday, 7:15 AM</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-info bg-opacity-10 text-info">Good</span>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background-color: #e6f7ee; color: #198754;">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Completed Workout: Morning Yoga</div>
+                            <div class="activity-time">Yesterday, 7:00 AM</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-success bg-opacity-10 text-success">45 min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background-color: #fff3cd; color: #ffc107;">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Logged Meal: Breakfast</div>
+                            <div class="activity-time">Yesterday, 8:00 AM</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning bg-opacity-10 text-warning">620 kcal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background-color: #f8d7da; color: #dc3545;">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Stress Level: High</div>
+                            <div class="activity-time">2 days ago</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">Monitor</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-primary">View All Activity</button>
+                    </div>
+                </div>
+                
+                <!-- Goals Tab -->
+                <div class="tab-pane fade" id="goals" role="tabpanel" aria-labelledby="goals-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">My Wellness Goals</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+                            <i class="fas fa-plus me-1"></i> Add Goal
+                        </button>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">Daily Goals</h6>
+                            
+                            <div class="goal-item">
+                                <div class="form-check goal-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="goal1" checked>
+                                </div>
+                                <div class="goal-text">
+                                    <label class="form-check-label" for="goal1">
+                                        Drink 8 glasses of water
+                                    </label>
+                                    <div class="goal-date">Due today</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">Hydration</span>
+                                </div>
+                            </div>
+                            
+                            <div class="goal-item">
+                                <div class="form-check goal-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="goal2">
+                                </div>
+                                <div class="goal-text">
+                                    <label class="form-check-label" for="goal2">
+                                        30 minutes of exercise
+                                    </label>
+                                    <div class="goal-date">Due today</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success bg-opacity-10 text-success">Fitness</span>
+                                </div>
+                            </div>
+                            
+                            <div class="goal-item">
+                                <div class="form-check goal-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="goal3">
+                                </div>
+                                <div class="goal-text">
+                                    <label class="form-check-label" for="goal3">
+                                        Meditate for 10 minutes
+                                    </label>
+                                    <div class="goal-date">Due today</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-info bg-opacity-10 text-info">Mindfulness</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Weekly Goals</h6>
+                            
+                            <div class="goal-item">
+                                <div class="form-check goal-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="goal4" checked>
+                                </div>
+                                <div class="goal-text completed">
+                                    <label class="form-check-label" for="goal4">
+                                        Complete 5 workouts
+                                    </label>
+                                    <div class="goal-date">Completed 2 days ago</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success bg-opacity-10 text-success">Fitness</span>
+                                </div>
+                            </div>
+                            
+                            <div class="goal-item">
+                                <div class="form-check goal-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="goal5">
+                                </div>
+                                <div class="goal-text">
+                                    <label class="form-check-label" for="goal5">
+                                        Log all meals for 5 days
+                                    </label>
+                                    <div class="goal-date">3 of 5 days completed</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">Nutrition</span>
+                                </div>
+                            </div>
+                            
+                            <div class="goal-item">
+                                <div class="form-check goal-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="goal6">
+                                </div>
+                                <div class="goal-text">
+                                    <label class="form-check-label" for="goal6">
+                                        Get 7+ hours of sleep 5 nights
+                                    </label>
+                                    <div class="goal-date">3 of 5 nights completed</div>
+                                </div>
+                                <div>
+                                    <span class="badge bg-info bg-opacity-10 text-info">Sleep</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Documents Tab -->
+                <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">My Documents</h5>
+                        <button class="btn btn-primary btn-sm">
+                            <i class="fas fa-upload me-1"></i> Upload
+                        </button>
+                    </div>
+                    
+                    <div class="document-item">
+                        <div class="document-icon">
+                            <i class="far fa-file-pdf"></i>
+                        </div>
+                        <div class="document-details">
+                            <div class="document-name">Wellness Assessment - June 2023</div>
+                            <div class="document-meta">PDF • 2.4 MB • June 15, 2023</div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="document-item">
+                        <div class="document-icon" style="background-color: #e3f5ff; color: #0dcaf0;">
+                            <i class="far fa-file-word"></i>
+                        </div>
+                        <div class="document-details">
+                            <div class="document-name">Health & Wellness Plan</div>
+                            <div class="document-meta">DOCX • 1.1 MB • May 28, 2023</div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="document-item">
+                        <div class="document-icon" style="background-color: #e6f7ee; color: #198754;">
+                            <i class="far fa-file-excel"></i>
+                        </div>
+                        <div class="document-details">
+                            <div class="document-name">Fitness Tracker - June 2023</div>
+                            <div class="document-meta">XLSX • 3.2 MB • June 1, 2023</div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="document-item">
+                        <div class="document-icon" style="background-color: #fff3cd; color: #ffc107;">
+                            <i class="far fa-file-image"></i>
+                        </div>
+                        <div class="document-details">
+                            <div class="document-name">Progress Photos - May 2023</div>
+                            <div class="document-meta">ZIP • 8.7 MB • May 31, 2023</div>
+                        </div>
+                        <div class="document-actions">
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                    <h5 class="mb-4">Account Settings</h5>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Profile Information
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" value="{{ current_user.username.split(' ')[0] }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" value="{{ current_user.username.split(' ')[1] if current_user.username.split(' ')|length > 1 else '' }}">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" value="{{ current_user.email }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" value="+1 (555) 123-4567">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" value="1990-01-15">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Bio</label>
+                                <textarea class="form-control" rows="3">Passionate about health and wellness, I'm on a journey to improve my physical and mental well-being through mindful practices and healthy habits.</textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Notification Preferences
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Email Notifications</div>
+                                    <div class="settings-description">Receive email notifications about your account activity</div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="emailNotifications" checked>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Push Notifications</div>
+                                    <div class="settings-description">Receive push notifications on your device</div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="pushNotifications" checked>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Reminder Emails</div>
+                                    <div class="settings-description">Receive daily reminder emails for check-ins</div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="reminderEmails" checked>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Newsletter</div>
+                                    <div class="settings-description">Subscribe to our wellness newsletter</div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="newsletter" checked>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-option">
+                                <div>
+                                    <div class="settings-label">Marketing Communications</div>
+                                    <div class="settings-description">Receive offers and promotions</div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="marketing">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Change Password
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-primary">Update Password</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger bg-opacity-10 text-danger">
+                            Danger Zone
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">Delete Account</h6>
+                            <p class="card-text small">Once you delete your account, there is no going back. Please be certain.</p>
+                            <button class="btn btn-outline-danger">Delete My Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit About Modal -->
+<div class="modal fade" id="editAboutModal" tabindex="-1" aria-labelledby="editAboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAboutModalLabel">Edit About Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="aboutBio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="aboutBio" rows="4">Passionate about health and wellness, I'm on a journey to improve my physical and mental well-being through mindful practices and healthy habits.</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" value="San Francisco, CA">
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" value="+1 (555) 123-4567">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Interest Modal -->
+<div class="modal fade" id="addInterestModal" tabindex="-1" aria-labelledby="addInterestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addInterestModalLabel">Add Health Interests</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="interestInput" placeholder="Type to add an interest...">
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-primary bg-opacity-10 text-primary p-2">Yoga <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove"></button></span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary p-2">Meditation <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove"></button></span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary p-2">Nutrition <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove"></button></span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary p-2">Fitness <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove"></button></span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary p-2">Sleep Hygiene <button type="button" class="btn-close btn-close-white btn-sm ms-1" aria-label="Remove"></button></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <h6>Popular Interests</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Running</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Cycling</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Weight Training</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Vegan Diet</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Intermittent Fasting</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Mindfulness</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Stress Management</span>
+                        <span class="badge bg-light text-dark p-2" style="cursor: pointer;">+ Mental Health</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Goal Modal -->
+<div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addGoalModalLabel">Add New Goal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="goalTitle" class="form-label">Goal Title</label>
+                        <input type="text" class="form-control" id="goalTitle" placeholder="e.g., Drink more water">
+                    </div>
+                    <div class="mb-3">
+                        <label for="goalCategory" class="form-label">Category</label>
+                        <select class="form-select" id="goalCategory">
+                            <option value="fitness">Fitness</option>
+                            <option value="nutrition">Nutrition</option>
+                            <option value="mindfulness">Mindfulness</option>
+                            <option value="sleep">Sleep</option>
+                            <option value="hydration">Hydration</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goalFrequency" class="form-label">Frequency</label>
+                        <select class="form-select" id="goalFrequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goalTarget" class="form-label">Target</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="goalTarget" placeholder="e.g., 8">
+                            <span class="input-group-text" id="goalUnit">glasses</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goalDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="goalDescription" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goalReminder" class="form-label">Reminder</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="goalReminder" checked>
+                            <label class="form-check-label" for="goalReminder">Enable daily reminder</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Add Goal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Update goal unit text based on category
+document.getElementById('goalCategory').addEventListener('change', function() {
+    const category = this.value;
+    const unitSpan = document.getElementById('goalUnit');
+    
+    switch(category) {
+        case 'hydration':
+            unitSpan.textContent = 'glasses';
+            break;
+        case 'fitness':
+            unitSpan.textContent = 'minutes';
+            break;
+        case 'sleep':
+            unitSpan.textContent = 'hours';
+            break;
+        case 'mindfulness':
+            unitSpan.textContent = 'minutes';
+            break;
+        default:
+            unitSpan.textContent = 'times';
+    }
+    
+    // Update placeholder based on category
+    const targetInput = document.getElementById('goalTarget');
+    if (category === 'sleep') {
+        targetInput.placeholder = 'e.g., 8';
+    } else if (category === 'mindfulness' || category === 'fitness') {
+        targetInput.placeholder = 'e.g., 30';
+    } else {
+        targetInput.placeholder = 'e.g., 8';
+    }
+});
+
+// Handle interest tag clicks
+document.querySelectorAll('.badge.bg-light').forEach(badge => {
+    badge.addEventListener('click', function() {
+        const interest = this.textContent.replace('+', '').trim();
+        const interestInput = document.getElementById('interestInput');
+        interestInput.value = interest;
+        interestInput.focus();
+    });
+});
+
+// Handle remove interest button clicks
+document.querySelectorAll('.btn-close').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.parentElement.remove();
+    });
+});
+
+// Initialize form validation for settings
+(function() {
+    'use strict';
+    
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation');
+    
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+
+// Handle tab state persistence
+const triggerTabList = [].slice.call(document.querySelectorAll('#profileTabs button'));
+triggerTabList.forEach(function (triggerEl) {
+    const tabTrigger = new bootstrap.Tab(triggerEl);
+    
+    triggerEl.addEventListener('click', function (event) {
+        event.preventDefault();
+        tabTrigger.show();
+        
+        // Save the active tab to localStorage
+        localStorage.setItem('activeProfileTab', triggerEl.getAttribute('data-bs-target'));
+    });
+});
+
+// On page load, check for saved tab state
+document.addEventListener('DOMContentLoaded', function() {
+    const activeTab = localStorage.getItem('activeProfileTab');
+    if (activeTab) {
+        const tab = document.querySelector(`#profileTabs button[data-bs-target="${activeTab}"]`);
+        if (tab) {
+            const tabInstance = new bootstrap.Tab(tab);
+            tabInstance.show();
+        }
+    }
+    
+    // Initialize chart if it exists on the page
+    if (typeof initCharts === 'function') {
+        initCharts();
+    }
+});
+
+// Function to initialize charts
+function initCharts() {
+    // This function would initialize any charts on the page
+    // For example, a wellness progress chart in the profile
+    const ctx = document.getElementById('wellnessChart');
+    if (ctx) {
+        // Chart initialization code would go here
+    }
+}
+</script>
+{% endblock %}

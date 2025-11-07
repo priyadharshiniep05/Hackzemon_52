@@ -1,0 +1,699 @@
+{% extends "base.html" %}
+
+{% block title %}Stress Relief Games - Wellness Monitor{% endblock %}
+
+{% block extra_css %}
+<style>
+    .game-container {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        margin-bottom: 20px;
+    }
+    
+    .bubble {
+        position: absolute;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        transition: transform 0.1s, opacity 0.3s;
+        user-select: none;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .bubble:hover {
+        transform: scale(1.05);
+    }
+    
+    .bubble.popped {
+        animation: pop 0.3s ease-out;
+        transform: scale(1.5);
+        opacity: 0;
+    }
+    
+    @keyframes pop {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.5); opacity: 0.7; }
+        100% { transform: scale(1.8); opacity: 0; }
+    }
+    
+    .game-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    .stat-box {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        flex: 1;
+        margin: 0 5px;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #0d6efd;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    .game-controls {
+        margin-bottom: 20px;
+    }
+    
+    .game-modes {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .game-mode-btn {
+        flex: 1;
+    }
+    
+    .wellness-graph-container {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .game-instructions {
+        background-color: #e9f5ff;
+        border-left: 4px solid #0d6efd;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    
+    .game-instructions h5 {
+        color: #0a58ca;
+        margin-top: 0;
+    }
+    
+    .game-instructions p {
+        margin-bottom: 0;
+    }
+    
+    .bubble-emoji {
+        font-size: 1.5em;
+        line-height: 1;
+    }
+    
+    .game-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    .game-title i {
+        font-size: 2rem;
+        margin-right: 15px;
+        color: #0d6efd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="game-title">
+                <i class="fas fa-gamepad"></i>
+                <h1 class="display-5 mb-0">Stress Relief Games</h1>
+            </div>
+            
+            <div class="game-instructions">
+                <h5><i class="fas fa-info-circle me-2"></i>How to Play</h5>
+                <p>Click or tap on the bubbles to pop them! Popping bubbles can help reduce stress and improve focus. Try different game modes for varied experiences.</p>
+            </div>
+            
+            <div class="game-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="bubbles-popped">0</div>
+                    <div class="stat-label">Bubbles Popped</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="time-remaining">60</div>
+                    <div class="stat-label">Seconds Left</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="stress-level">0%</div>
+                    <div class="stat-label">Stress Level</div>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <button id="startGame" class="btn btn-primary">
+                    <i class="fas fa-play me-2"></i>Start Game
+                </button>
+                <button id="resetGame" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-redo me-2"></i>Reset
+                </button>
+                
+                <div class="game-modes">
+                    <button class="btn btn-outline-primary game-mode-btn active" data-mode="relax">
+                        <i class="fas fa-spa me-1"></i> Relax Mode
+                    </button>
+                    <button class="btn btn-outline-success game-mode-btn" data-mode="challenge">
+                        <i class="fas fa-trophy me-1"></i> Challenge
+                    </button>
+                    <button class="btn btn-outline-warning game-mode-btn" data-mode="zen">
+                        <i class="fas fa-moon me-1"></i> Zen Mode
+                    </button>
+                </div>
+            </div>
+            
+            <div class="game-container" id="gameContainer">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="text-center">
+                        <i class="fas fa-gamepad fa-3x mb-3 text-muted"></i>
+                        <h5>Click "Start Game" to begin</h5>
+                        <p class="text-muted">Pop bubbles to relieve stress and track your progress</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="wellness-graph-container">
+                <h4 class="mb-4"><i class="fas fa-chart-line me-2"></i>Your Wellness Progress</h4>
+                <canvas id="wellnessChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-3">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h5>Mindfulness Benefits</h5>
+                    <p>Taking short breaks to play games can help reduce stress and improve focus throughout the day.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 text-success mb-3">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h5>Stress Relief</h5>
+                    <p>Engaging in simple, repetitive activities like popping bubbles can help calm the mind and reduce anxiety.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="display-4 text-info mb-3">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h5>Track Progress</h5>
+                    <p>Monitor your stress levels over time with our wellness tracking features.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Game variables
+let score = 0;
+let bubblesPopped = 0;
+let gameActive = false;
+let gameTimer;
+let timeLeft = 60;
+let gameMode = 'relax'; // 'relax', 'challenge', or 'zen'
+let stressLevel = 0;
+let gameInterval;
+let bubbleInterval;
+let gameStartTime;
+let poppedBubbles = 0;
+let totalBubblesSpawned = 0;
+
+// DOM Elements
+const gameContainer = document.getElementById('gameContainer');
+const startButton = document.getElementById('startGame');
+const resetButton = document.getElementById('resetGame');
+const scoreElement = document.getElementById('score');
+const bubblesPoppedElement = document.getElementById('bubbles-popped');
+const timeRemainingElement = document.getElementById('time-remaining');
+const stressLevelElement = document.getElementById('stress-level');
+const gameModeButtons = document.querySelectorAll('.game-mode-btn');
+
+// Bubble emojis
+const bubbleEmojis = ['💧', '💦', '🫧', '⚪', '🔵', '⚫', '🔴', '🟢', '🟡', '🟣'];
+
+// Game modes configuration
+const gameModes = {
+    relax: {
+        bubbleSpawnRate: 1000,    // ms between bubbles
+        bubbleLifespan: 5000,     // ms before bubble disappears
+        pointsPerBubble: 10,
+        timeLimit: 60,            // seconds
+        stressReduction: 2,       // % stress reduction per bubble
+        maxBubbles: 20,
+        colors: ['#4cc9f0', '#4895ef', '#4361ee', '#3f37c9', '#3a0ca3']
+    },
+    challenge: {
+        bubbleSpawnRate: 500,
+        bubbleLifespan: 3000,
+        pointsPerBubble: 20,
+        timeLimit: 45,
+        stressReduction: 3,
+        maxBubbles: 30,
+        colors: ['#f72585', '#b5179e', '#7209b7', '#560bad', '#480ca8']
+    },
+    zen: {
+        bubbleSpawnRate: 2000,
+        bubbleLifespan: 8000,
+        pointsPerBubble: 5,
+        timeLimit: 120,
+        stressReduction: 1,
+        maxBubbles: 15,
+        colors: ['#8ac926', '#1982c4', '#6a4c93', '#f15bb5', '#ff9f1c']
+    }
+};
+
+// Initialize wellness chart
+let wellnessChart;
+function initWellnessChart() {
+    const ctx = document.getElementById('wellnessChart').getContext('2d');
+    
+    // Sample data - in a real app, this would come from your backend
+    const labels = Array.from({length: 7}, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return d.toLocaleDateString('en-US', {weekday: 'short'});
+    });
+    
+    const stressData = labels.map(() => Math.floor(Math.random() * 40) + 30);
+    const wellnessData = stressData.map(s => 100 - s);
+    
+    wellnessChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Stress Level',
+                    data: stressData,
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Wellness Index',
+                    data: wellnessData,
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Your 7-Day Wellness Trend'
+                }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Score (%)'
+                    }
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+}
+
+// Create a bubble
+function createBubble() {
+    if (!gameActive || document.querySelectorAll('.bubble').length >= gameModes[gameMode].maxBubbles) {
+        return;
+    }
+    
+    totalBubblesSpawned++;
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    
+    // Random size between 30 and 80 pixels
+    const size = Math.floor(Math.random() * 50) + 30;
+    
+    // Random position within container (accounting for bubble size)
+    const maxX = gameContainer.offsetWidth - size;
+    const maxY = gameContainer.offsetHeight - size;
+    const posX = Math.floor(Math.random() * maxX);
+    const posY = Math.floor(Math.random() * maxY);
+    
+    // Random color from the game mode's color palette
+    const colors = gameModes[gameMode].colors;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    
+    // Random emoji
+    const emoji = bubbleEmojis[Math.floor(Math.random() * bubbleEmojis.length)];
+    
+    // Set bubble styles
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${posX}px`;
+    bubble.style.top = `${posY}px`;
+    bubble.style.backgroundColor = color;
+    bubble.style.opacity = '0.8';
+    bubble.innerHTML = `<span class="bubble-emoji">${emoji}</span>`;
+    
+    // Add animation
+    bubble.style.transform = 'scale(0.5)';
+    bubble.style.transition = 'transform 0.3s ease-out, opacity 0.3s';
+    
+    // Add to container
+    gameContainer.appendChild(bubble);
+    
+    // Animate in
+    setTimeout(() => {
+        bubble.style.transform = 'scale(1)';
+    }, 10);
+    
+    // Auto-remove bubble after its lifespan
+    setTimeout(() => {
+        if (bubble.parentNode === gameContainer) {
+            bubble.style.opacity = '0';
+            bubble.style.transform = 'scale(0.5)';
+            
+            // Remove from DOM after animation
+            setTimeout(() => {
+                if (bubble.parentNode === gameContainer) {
+                    gameContainer.removeChild(bubble);
+                }
+            }, 300);
+        }
+    }, gameModes[gameMode].bubbleLifespan);
+    
+    // Add click handler
+    bubble.addEventListener('click', function popBubble() {
+        if (bubble.classList.contains('popped')) return;
+        
+        // Mark as popped
+        bubble.classList.add('popped');
+        
+        // Update score and stats
+        score += gameModes[gameMode].pointsPerBubble;
+        bubblesPopped++;
+        poppedBubbles++;
+        
+        // Update stress level (reduce stress when popping bubbles)
+        stressLevel = Math.max(0, stressLevel - gameModes[gameMode].stressReduction);
+        
+        // Update UI
+        updateUI();
+        
+        // Add points animation
+        const points = document.createElement('div');
+        points.className = 'points-animation';
+        points.textContent = `+${gameModes[gameMode].pointsPerBubble}`;
+        points.style.position = 'absolute';
+        points.style.left = `${posX + size/2 - 15}px`;
+        points.style.top = `${posY + size/2 - 15}px`;
+        points.style.color = 'white';
+        points.style.fontWeight = 'bold';
+        points.style.fontSize = '1.2em';
+        points.style.textShadow = '0 1px 2px rgba(0,0,0,0.5)';
+        points.style.pointerEvents = 'none';
+        points.style.animation = 'floatUp 1s ease-out forwards';
+        
+        gameContainer.appendChild(points);
+        
+        // Remove points element after animation
+        setTimeout(() => {
+            if (points.parentNode === gameContainer) {
+                gameContainer.removeChild(points);
+            }
+        }, 1000);
+        
+        // Remove bubble after pop animation
+        setTimeout(() => {
+            if (bubble.parentNode === gameContainer) {
+                gameContainer.removeChild(bubble);
+            }
+        }, 300);
+    });
+}
+
+// Update game UI
+function updateUI() {
+    scoreElement.textContent = score;
+    bubblesPoppedElement.textContent = bubblesPopped;
+    timeRemainingElement.textContent = timeLeft;
+    stressLevelElement.textContent = `${Math.round(stressLevel)}%`;
+    
+    // Update stress level color
+    if (stressLevel > 70) {
+        stressLevelElement.style.color = '#dc3545';
+    } else if (stressLevel > 40) {
+        stressLevelElement.style.color = '#fd7e14';
+    } else {
+        stressLevelElement.style.color = '#198754';
+    }
+}
+
+// Game timer
+function updateTimer() {
+    if (!gameActive) return;
+    
+    timeLeft--;
+    
+    // Increase stress level over time (slower in zen mode)
+    if (timeLeft % (gameMode === 'zen' ? 5 : 3) === 0) {
+        stressLevel = Math.min(100, stressLevel + 1);
+    }
+    
+    // Update UI
+    updateUI();
+    
+    // Check if time's up
+    if (timeLeft <= 0) {
+        endGame();
+    }
+}
+
+// Start game
+function startGame() {
+    if (gameActive) return;
+    
+    // Reset game state
+    gameActive = true;
+    score = 0;
+    bubblesPopped = 0;
+    poppedBubbles = 0;
+    totalBubblesSpawned = 0;
+    timeLeft = gameModes[gameMode].timeLimit;
+    stressLevel = 20; // Start with some stress
+    
+    // Clear any existing bubbles
+    document.querySelectorAll('.bubble').forEach(bubble => {
+        bubble.style.opacity = '0';
+        setTimeout(() => bubble.remove(), 300);
+    });
+    
+    // Update UI
+    updateUI();
+    startButton.disabled = true;
+    
+    // Start game timer
+    gameTimer = setInterval(updateTimer, 1000);
+    
+    // Start spawning bubbles
+    bubbleInterval = setInterval(createBubble, gameModes[gameMode].bubbleSpawnRate);
+    
+    // Initial bubbles
+    for (let i = 0; i < 5; i++) {
+        setTimeout(createBubble, i * 200);
+    }
+    
+    // Record game start time
+    gameStartTime = Date.now();
+}
+
+// End game
+function endGame() {
+    gameActive = false;
+    clearInterval(gameTimer);
+    clearInterval(bubbleInterval);
+    
+    // Calculate accuracy
+    const accuracy = totalBubblesSpawned > 0 
+        ? Math.round((poppedBubbles / totalBubblesSpawned) * 100) 
+        : 0;
+    
+    // Calculate time played (in seconds)
+    const timePlayed = Math.round((Date.now() - gameStartTime) / 1000);
+    
+    // Show game over message
+    const message = `
+        <div class="text-center p-4">
+            <h3>Game Over!</h3>
+            <p class="lead">Your score: <strong>${score}</strong></p>
+            <p>Bubbles popped: ${bubblesPopped}</p>
+            <p>Accuracy: ${accuracy}%</p>
+            <p>Time played: ${timePlayed} seconds</p>
+            <p>Final stress level: ${Math.round(stressLevel)}%</p>
+            <button id="playAgain" class="btn btn-primary mt-3">
+                <i class="fas fa-redo me-2"></i>Play Again
+            </button>
+        </div>
+    `;
+    
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'game-overlay d-flex align-items-center justify-content-center';
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.right = '0';
+    overlay.style.bottom = '0';
+    overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+    overlay.style.zIndex = '1000';
+    overlay.style.borderRadius = '6px';
+    overlay.innerHTML = message;
+    
+    // Add to container
+    gameContainer.appendChild(overlay);
+    
+    // Add click handler to play again button
+    overlay.querySelector('#playAgain').addEventListener('click', () => {
+        gameContainer.removeChild(overlay);
+        startGame();
+    });
+    
+    // Re-enable start button
+    startButton.disabled = false;
+}
+
+// Reset game
+function resetGame() {
+    // Clear game state
+    clearInterval(gameTimer);
+    clearInterval(bubbleInterval);
+    gameActive = false;
+    
+    // Reset UI
+    score = 0;
+    bubblesPopped = 0;
+    timeLeft = gameModes[gameMode].timeLimit;
+    stressLevel = 0;
+    updateUI();
+    
+    // Clear bubbles
+    document.querySelectorAll('.bubble').forEach(bubble => bubble.remove());
+    
+    // Clear game over overlay if present
+    const overlay = document.querySelector('.game-overlay');
+    if (overlay) {
+        gameContainer.removeChild(overlay);
+    }
+    
+    // Re-enable start button
+    startButton.disabled = false;
+}
+
+// Set game mode
+function setGameMode(mode) {
+    gameMode = mode;
+    
+    // Update active button
+    gameModeButtons.forEach(btn => {
+        if (btn.dataset.mode === mode) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Reset game if it's running
+    if (gameActive) {
+        resetGame();
+    }
+}
+
+// Event Listeners
+startButton.addEventListener('click', startGame);
+resetButton.addEventListener('click', resetGame);
+
+gameModeButtons.forEach(btn => {
+    btn.addEventListener('click', () => setGameMode(btn.dataset.mode));
+});
+
+// Initialize wellness chart when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initWellnessChart();
+});
+
+// Add CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes floatUp {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(-50px); opacity: 0; }
+    }
+    
+    .points-animation {
+        animation: floatUp 1s ease-out forwards;
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}
